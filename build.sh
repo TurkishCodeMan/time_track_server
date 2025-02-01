@@ -5,8 +5,14 @@ set -o errexit
 # Create logs directory
 mkdir -p logs
 
-# Modify this line as needed for your package manager (pip, poetry, etc.)
+# Upgrade pip
+python -m pip install --upgrade pip
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Install additional dependencies for ASGI
+pip install uvicorn gunicorn
 
 # Convert static asset files
 python manage.py collectstatic --no-input

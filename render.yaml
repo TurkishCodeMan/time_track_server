@@ -6,17 +6,18 @@ databases:
 
 services:
   - type: web
-    plan: free
-    name: timetrack
-    runtime: python
+    name: timetrack-api
+    env: python
     buildCommand: "./build.sh"
-    startCommand: "python -m gunicorn api.asgi:application -k uvicorn.workers.UvicornWorker"
+    startCommand: "python -m gunicorn timetrack.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
       - key: DATABASE_URL
-        fromDatabase:
-          name: timetrackdb
-          property: connectionString
-      - key: SECRET_KEY
+        value: sqlite:///db.sqlite3
+      - key: DJANGO_SECRET_KEY
         generateValue: true
-      - key: WEB_CONCURRENCY
-        value: 4 
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DEBUG
+        value: "False" 
