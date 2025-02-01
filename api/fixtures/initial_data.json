@@ -1,0 +1,315 @@
+[
+    {
+        "model": "api.machine",
+        "pk": 1,
+        "fields": {
+            "name": "PD-500 Tetra",
+            "description": "Hidrolik Sondaj Makinesi - 500 metre derinlik kapasiteli",
+            "status": "DRILLING",
+            "is_active": true,
+            "created_at": "2024-03-20T10:00:00Z",
+            "updated_at": "2024-03-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "api.machine",
+        "pk": 2,
+        "fields": {
+            "name": "PD-750 Alpha",
+            "description": "Hidrolik Sondaj Makinesi - 750 metre derinlik kapasiteli, tam otomatik rod değiştirme sistemi",
+            "is_active": true,
+            "created_at": "2024-03-20T10:00:00Z",
+            "updated_at": "2024-03-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "api.machine",
+        "pk": 3,
+        "fields": {
+            "name": "PD-1000 Delta",
+            "description": "Ağır Hizmet Sondaj Makinesi - 1000 metre derinlik kapasiteli, çift tamburlu vinç sistemi",
+            "is_active": true,
+            "created_at": "2024-03-20T10:00:00Z",
+            "updated_at": "2024-03-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 1,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": true,
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "ADMIN",
+            "name": "Admin",
+            "surname": "User",
+            "email": "admin@example.com",
+            "username": "admin@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 2,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "ENGINEER",
+            "name": "Mehmet",
+            "surname": "Yılmaz",
+            "email": "mehmet.yilmaz@example.com",
+            "username": "mehmet.yilmaz@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 3,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "ENGINEER",
+            "name": "Ayşe",
+            "surname": "Demir",
+            "email": "ayse.demir@example.com",
+            "username": "ayse.demir@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 4,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "ENGINEER",
+            "name": "Ali",
+            "surname": "Kaya",
+            "email": "ali.kaya@example.com",
+            "username": "ali.kaya@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 5,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "ENGINEER",
+            "name": "Zeynep",
+            "surname": "Şahin",
+            "email": "zeynep.sahin@example.com",
+            "username": "zeynep.sahin@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 6,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Mustafa",
+            "surname": "Öztürk",
+            "email": "mustafa.ozturk@example.com",
+            "username": "mustafa.ozturk@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 7,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Fatma",
+            "surname": "Çelik",
+            "email": "fatma.celik@example.com",
+            "username": "fatma.celik@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 8,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Ahmet",
+            "surname": "Arslan",
+            "email": "ahmet.arslan@example.com",
+            "username": "ahmet.arslan@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 9,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Emine",
+            "surname": "Yıldız",
+            "email": "emine.yildiz@example.com",
+            "username": "emine.yildiz@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 10,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Hasan",
+            "surname": "Aydın",
+            "email": "hasan.aydin@example.com",
+            "username": "hasan.aydin@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 11,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Hatice",
+            "surname": "Koç",
+            "email": "hatice.koc@example.com",
+            "username": "hatice.koc@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 12,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "İbrahim",
+            "surname": "Kurt",
+            "email": "ibrahim.kurt@example.com",
+            "username": "ibrahim.kurt@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 13,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Aysel",
+            "surname": "Özkan",
+            "email": "aysel.ozkan@example.com",
+            "username": "aysel.ozkan@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 14,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Osman",
+            "surname": "Güler",
+            "email": "osman.guler@example.com",
+            "username": "osman.guler@example.com"
+        }
+    },
+    {
+        "model": "api.user",
+        "pk": 15,
+        "fields": {
+            "password": "pbkdf2_sha256$600000$dj7KDAYeZK9nGrJ6Dp8Yvx$B+qXkqY1Eb4mR3OZnVE9jVAKzEVnHFxZVvJJk4lXvYM=",
+            "is_superuser": false,
+            "is_staff": false,
+            "is_active": true,
+            "date_joined": "2024-03-20T10:00:00Z",
+            "role": "WORKER",
+            "name": "Sevim",
+            "surname": "Doğan",
+            "email": "sevim.dogan@example.com",
+            "username": "sevim.dogan@example.com"
+        }
+    },
+    {
+        "model": "api.machinelocation",
+        "pk": 1,
+        "fields": {
+            "machine": 1,
+            "latitude": 38.3726,
+            "longitude": 38.2087,
+            "heading": 45.0,
+            "accuracy": 3.0,
+            "timestamp": "2024-03-20T10:00:00Z",
+            "created_at": "2024-03-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "api.machinelocation",
+        "pk": 2,
+        "fields": {
+            "machine": 2,
+            "latitude": 38.3731,
+            "longitude": 38.2092,
+            "heading": 90.0,
+            "accuracy": 3.0,
+            "timestamp": "2024-03-20T10:00:00Z",
+            "created_at": "2024-03-20T10:00:00Z"
+        }
+    },
+    {
+        "model": "api.machinelocation",
+        "pk": 3,
+        "fields": {
+            "machine": 3,
+            "latitude": 38.3735,
+            "longitude": 38.2098,
+            "heading": 180.0,
+            "accuracy": 3.0,
+            "timestamp": "2024-03-20T10:00:00Z",
+            "created_at": "2024-03-20T10:00:00Z"
+        }
+    }
+] 

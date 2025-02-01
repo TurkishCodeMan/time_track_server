@@ -1,0 +1,22 @@
+databases:
+  - name: timetrackdb
+    plan: free
+    databaseName: timetrack
+    user: timetrack
+
+services:
+  - type: web
+    plan: free
+    name: timetrack
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "python -m gunicorn api.asgi:application -k uvicorn.workers.UvicornWorker"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: timetrackdb
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4 
