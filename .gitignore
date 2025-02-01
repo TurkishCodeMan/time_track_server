@@ -19,27 +19,41 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Django
 *.log
+*.pot
+*.pyc
+__pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 media
 staticfiles/
 
+# Logs
+logs/
+*.log
+logs/*.log
+
 # Virtual Environment
 venv/
-ENV/
-env/
 .env
+.venv
+env/
+ENV/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
+
+# OS
 .DS_Store
+Thumbs.db
 
 # Render specific
 node_modules/
