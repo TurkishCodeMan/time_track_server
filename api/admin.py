@@ -8,6 +8,20 @@ class CustomUserAdmin(UserAdmin):
     list_filter = ('role', 'is_active')
     search_fields = ('username', 'email', 'name', 'surname')
     ordering = ('username',)
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Kişisel Bilgiler', {'fields': ('name', 'surname', 'email')}),
+        ('Yetkiler', {'fields': ('role', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Önemli Tarihler', {'fields': ('last_login', 'date_joined')}),
+    )
+    
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'name', 'surname', 'role', 'password1', 'password2'),
+        }),
+    )
 
 @admin.register(Machine)
 class MachineAdmin(admin.ModelAdmin):

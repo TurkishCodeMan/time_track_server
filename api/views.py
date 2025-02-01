@@ -794,18 +794,29 @@ def location_history(request, machine_id, location_id=None):
             # Her lokasyon için toplam değerleri hesapla
             location_data = []
             for location in locations:
-                # Bu lokasyonda sonlanan vardiyaların toplamını hesapla
-                shifts_ended_here = Shift.objects.filter(
-                    end_location=location,
+                # Bu lokasyonda yapılan tüm vardiyaların toplamını hesapla
+                shifts = Shift.objects.filter(
+                    models.Q(start_location=location) | models.Q(end_location=location),
                     end_time__isnull=False
                 )
-                total_drilling = shifts_ended_here.aggregate(
-                    total=models.Sum('drilling_depth')
-                )['total'] or 0
                 
-                total_fuel = shifts_ended_here.aggregate(
-                    total=models.Sum('fuel_consumption')
-                )['total'] or 0
+                total_drilling = 0
+                total_fuel = 0
+                
+                # Her vardiya için o lokasyonda yapılan işi hesapla
+                for shift in shifts:
+                    # Eğer vardiya bu lokasyonda başladı ve bitti ise tüm miktarı al
+                    if shift.start_location == location and shift.end_location == location:
+                        total_drilling += float(shift.drilling_depth)
+                        total_fuel += float(shift.fuel_consumption)
+                    # Eğer vardiya bu lokasyonda başladı ise yarısını al
+                    elif shift.start_location == location:
+                        total_drilling += float(shift.drilling_depth) / 2
+                        total_fuel += float(shift.fuel_consumption) / 2
+                    # Eğer vardiya bu lokasyonda bitti ise yarısını al
+                    elif shift.end_location == location:
+                        total_drilling += float(shift.drilling_depth) / 2
+                        total_fuel += float(shift.fuel_consumption) / 2
                 
                 # Lokasyon verisini güncelle
                 location.drilling_depth = total_drilling
