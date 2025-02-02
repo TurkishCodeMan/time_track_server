@@ -105,6 +105,7 @@ lazy_loader==0.4
 lesscpy==0.15.1
 libclang==18.1.1
 livekit-api==0.6.0
+daphne==4.1.2
 livekit-protocol==0.6.0
 llvmlite==0.43.0
 lxml==5.1.0
