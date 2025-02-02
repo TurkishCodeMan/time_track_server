@@ -5,6 +5,9 @@ set -o errexit
 # Create logs directory
 mkdir -p logs
 
+# Set Python Path
+export PYTHONPATH=$PYTHONPATH:$(pwd)
+
 # Upgrade pip
 python -m pip install --upgrade pip
 
