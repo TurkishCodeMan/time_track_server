@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # Token authentication için
     'corsheaders',
     'api',
+    'inventory',  # Inventory app'i doğru şekilde eklendi
 ]
 
 MIDDLEWARE = [
@@ -113,6 +114,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
