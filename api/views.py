@@ -175,7 +175,7 @@ class MachineViewSet(viewsets.ModelViewSet):
     queryset = Machine.objects.all()
     
     def get_permissions(self):
-        if self.action in ['assign_worker', 'unassign_worker']:
+        if self.action in ['assign_worker', 'unassign_worker', 'update_status']:
             permission_classes = [IsAuthenticated, HasRole(['ADMIN', 'ENGINEER'])]
         else:
             permission_classes = [IsAuthenticated]
@@ -338,6 +338,30 @@ class MachineViewSet(viewsets.ModelViewSet):
                 {'error': f'Beklenmeyen bir hata oluştu: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    @action(detail=True, methods=['post'])
+    def update_status(self, request, pk=None):
+        """Makinenin durumunu güncelle"""
+        machine = self.get_object()
+        new_status = request.data.get('status')
+        
+        if not new_status:
+            return Response(
+                {'error': 'status gerekli'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        if new_status not in Machine.StatusTypes.values:
+            return Response(
+                {'error': 'Geçersiz durum'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        old_status = machine.status
+        machine.status = new_status
+        machine.save()
+        
+        return Response(MachineSerializer(machine).data)
 
 class WorkerMachineViewSet(viewsets.ModelViewSet):
     queryset = WorkerMachine.objects.all()
@@ -674,48 +698,89 @@ class ShiftViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Shift.objects.all()
 
-    def create(self, request, *args, **kwargs):
-        """Yeni vardiya oluştur"""
-        data = request.data
-        machine_id = data.get('machine')
-        worker_ids = data.get('workers', [])
+    @action(detail=True, methods=['delete'])
+    @require_roles(['ADMIN', 'ENGINEER'])
+    def delete_shift(self, request, pk=None):
+        """Vardiyayı sil"""
+        shift = self.get_object()
+        
+        if not shift.end_time:
+            return Response(
+                {'error': 'Aktif vardiya silinemez. Önce vardiyayı sonlandırın.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
-            # Makineyi kontrol et
-            machine = Machine.objects.get(id=machine_id)
+            # İlgili yakıt tüketimi kayıtlarını sil
+            FuelConsumption.objects.filter(shift=shift).delete()
             
-            # Aktif vardiya var mı kontrol et
-            if Shift.objects.filter(machine=machine, end_time__isnull=True).exists():
+            # Geçici çalışanları sil
+            for worker in shift.workers.all():
+                if worker.email.startswith('temp_'):
+                    shift.workers.remove(worker)
+                    worker.delete()
+            
+            # Vardiyayı sil
+            shift.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+            
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    @action(detail=True, methods=['post', 'delete'])
+    def workers(self, request, pk=None):
+        """Vardiyaya çalışan ekle veya çıkar"""
+        shift = self.get_object()
+        
+        # DELETE metodu için
+        if request.method == 'DELETE':
+            worker_id = request.data.get('worker_id')
+            if not worker_id:
                 return Response(
-                    {'error': 'Bu makine için zaten aktif bir vardiya var'},
+                    {'error': 'worker_id gerekli'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Çalışanları kontrol et
-            workers = User.objects.filter(id__in=worker_ids)
-            if len(workers) != len(worker_ids):
+            try:
+                worker = User.objects.get(id=worker_id)
+                shift.workers.remove(worker)
+                # Geçici çalışanı sil
+                if worker.email.startswith('temp_'):
+                    worker.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except User.DoesNotExist:
                 return Response(
-                    {'error': 'Bazı çalışanlar bulunamadı'},
-                    status=status.HTTP_400_BAD_REQUEST
+                    {'error': 'Çalışan bulunamadı'},
+                    status=status.HTTP_404_NOT_FOUND
                 )
 
-            # Vardiya oluştur
-            shift = Shift.objects.create(
-                machine=machine,
-                start_time=timezone.now()
+        # POST metodu için
+        data = request.data
+        try:
+            # Yeni çalışan oluştur
+            worker = User.objects.create(
+                name=data.get('name'),
+                surname=data.get('surname', ''),
+                email=f"temp_{pk}_{timezone.now().timestamp()}@temp.com",
+                role='WORKER',
+                username=f"temp_{pk}_{timezone.now().timestamp()}",
+                is_active=True
             )
-            shift.workers.set(workers)
+            
+            # Çalışanı vardiyaya ekle
+            shift.workers.add(worker)
+            shift.save()
 
-            return Response(
-                ShiftSerializer(shift).data,
-                status=status.HTTP_201_CREATED
-            )
+            return Response({
+                'id': worker.id,
+                'name': worker.name,
+                'role': worker.role
+            })
 
-        except Machine.DoesNotExist:
-            return Response(
-                {'error': 'Makine bulunamadı'},
-                status=status.HTTP_404_NOT_FOUND
-            )
         except Exception as e:
             return Response(
                 {'error': str(e)},
@@ -736,44 +801,30 @@ class ShiftViewSet(viewsets.ModelViewSet):
         data = request.data
         drilling_depth = data.get('drilling_depth', 0)
         fuel_consumption = data.get('fuel_consumption', 0)
-        end_location_id = data.get('end_location')
 
         try:
             # Vardiyayı sonlandır
             shift.end_time = timezone.now()
             shift.drilling_depth = drilling_depth
             shift.fuel_consumption = fuel_consumption
-            
-            # Bitiş lokasyonunu ayarla
-            if end_location_id:
-                end_location = LocationHistory.objects.get(id=end_location_id)
-                shift.end_location = end_location
-                
-                # Lokasyon bilgilerini güncelle
-                end_location.drilling_depth = drilling_depth
-                end_location.fuel_consumption = fuel_consumption
-                end_location.save()
-
             shift.save()
 
             # Yakıt tüketimini kaydet
-            if fuel_consumption > 0:
-                FuelConsumption.objects.create(
-                    machine=shift.machine,
-                    shift=shift,
-                    amount=fuel_consumption,
-                    location=shift.end_location,
-                    timestamp=shift.end_time,
-                    notes=f"Vardiya sonlandırma - {shift.end_time.strftime('%Y-%m-%d %H:%M')}"
-                )
+            FuelConsumption.objects.create(
+                machine=shift.machine,
+                shift=shift,
+                amount=fuel_consumption,
+                timestamp=shift.end_time
+            )
+
+            # Geçici çalışanları sil
+            for worker in shift.workers.all():
+                if worker.email.startswith('temp_'):
+                    shift.workers.remove(worker)
+                    worker.delete()
 
             return Response(ShiftSerializer(shift).data)
             
-        except LocationHistory.DoesNotExist:
-            return Response(
-                {'error': 'Belirtilen lokasyon bulunamadı'},
-                status=status.HTTP_404_NOT_FOUND
-            )
         except Exception as e:
             return Response(
                 {'error': str(e)},
@@ -805,18 +856,16 @@ def location_history(request, machine_id, location_id=None):
                 
                 # Her vardiya için o lokasyonda yapılan işi hesapla
                 for shift in shifts:
-                    # Eğer vardiya bu lokasyonda başladı ve bitti ise tüm miktarı al
+                    # Delgi miktarı için lokasyon bazlı hesaplama
                     if shift.start_location == location and shift.end_location == location:
-                        total_drilling += float(shift.drilling_depth)
-                        total_fuel += float(shift.fuel_consumption)
-                    # Eğer vardiya bu lokasyonda başladı ise yarısını al
+                        total_drilling += float(shift.drilling_depth or 0)
                     elif shift.start_location == location:
-                        total_drilling += float(shift.drilling_depth) / 2
-                        total_fuel += float(shift.fuel_consumption) / 2
-                    # Eğer vardiya bu lokasyonda bitti ise yarısını al
+                        total_drilling += float(shift.drilling_depth or 0) / 2
                     elif shift.end_location == location:
-                        total_drilling += float(shift.drilling_depth) / 2
-                        total_fuel += float(shift.fuel_consumption) / 2
+                        total_drilling += float(shift.drilling_depth or 0) / 2
+                    
+                    # Yakıt tüketimi için vardiya bazlı toplam hesaplama
+                    total_fuel += float(shift.fuel_consumption or 0)
                 
                 # Lokasyon verisini güncelle
                 location.drilling_depth = total_drilling
@@ -894,33 +943,51 @@ def end_shift(request, shift_id):
     except Shift.DoesNotExist:
         return Response({'error': 'Vardiya bulunamadı'}, status=404)
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
-def fuel_consumption(request, machine_id):
-    """
-    Makinenin mazot tüketimini getir veya yeni tüketim kaydı oluştur
-    """
-    if request.method == 'GET':
-        # Tüm yakıt tüketim kayıtlarını al
-        consumptions = FuelConsumption.objects.filter(machine_id=machine_id)
+def fuel_consumption(request, machine_id, consumption_id=None):
+    machine = get_object_or_404(Machine, id=machine_id)
+    
+    if request.method == 'DELETE':
+        if not consumption_id:
+            return Response(
+                {'error': 'Yakıt tüketimi ID\'si gerekli'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        consumption = get_object_or_404(FuelConsumption, id=consumption_id, machine=machine)
+        consumption.delete()
         
-        # Toplam tüketimi hesapla
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    elif request.method == 'GET':
+        # Mevcut GET işlemi
+        consumptions = FuelConsumption.objects.filter(machine=machine)
         total_consumption = consumptions.aggregate(total=models.Sum('amount'))['total'] or 0
         
-        # Kayıtları serialize et
         serializer = FuelConsumptionSerializer(consumptions, many=True)
-        
         return Response({
             'total_consumption': total_consumption,
             'history': serializer.data
         })
-    
+        
     elif request.method == 'POST':
-        serializer = FuelConsumptionSerializer(data=request.data)
+        # Mevcut POST işlemi
+        data = {
+            'machine': machine.id,
+            'amount': request.data.get('amount'),
+            'shift': request.data.get('shift'),
+            'location': request.data.get('location'),
+            'notes': request.data.get('notes', ''),
+            'timestamp': request.data.get('timestamp', timezone.now())
+        }
+        
+        serializer = FuelConsumptionSerializer(data=data)
         if serializer.is_valid():
-            serializer.save(machine_id=machine_id)
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LocationHistoryViewSet(viewsets.ModelViewSet):
     serializer_class = LocationHistorySerializer
