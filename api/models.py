@@ -276,6 +276,7 @@ class Shift(models.Model):
     fuel_consumption = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     start_location = models.ForeignKey('LocationHistory', on_delete=models.SET_NULL, null=True, related_name='shift_starts')
     end_location = models.ForeignKey('LocationHistory', on_delete=models.SET_NULL, null=True, related_name='shift_ends')
+    report_image = models.ImageField(upload_to='shift_reports/', null=True, blank=False, help_text=_('Vardiya rapor defteri fotoğrafı'))
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -801,12 +801,20 @@ class ShiftViewSet(viewsets.ModelViewSet):
         data = request.data
         drilling_depth = data.get('drilling_depth', 0)
         fuel_consumption = data.get('fuel_consumption', 0)
+        report_image = request.FILES.get('report_image')
+
+        if not report_image:
+            return Response(
+                {'error': 'Rapor defteri fotoğrafı zorunludur'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             # Vardiyayı sonlandır
             shift.end_time = timezone.now()
             shift.drilling_depth = drilling_depth
             shift.fuel_consumption = fuel_consumption
+            shift.report_image = report_image
             shift.save()
 
             # Yakıt tüketimini kaydet

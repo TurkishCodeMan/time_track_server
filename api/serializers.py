@@ -97,10 +97,19 @@ class LocationHistorySerializer(serializers.ModelSerializer):
                  'drilling_depth', 'fuel_consumption', 'timestamp', 'created_at']
 
 class ShiftSerializer(serializers.ModelSerializer):
+    report_image_url = serializers.SerializerMethodField()
+
+    def get_report_image_url(self, obj):
+        if obj.report_image:
+            return obj.report_image.url
+        return None
+
     class Meta:
         model = Shift
         fields = ['id', 'machine', 'workers', 'start_time', 'end_time', 
-                 'drilling_depth', 'fuel_consumption', 'created_at', 'updated_at']
+                 'drilling_depth', 'fuel_consumption', 'created_at', 'updated_at',
+                 'report_image', 'report_image_url']
+        read_only_fields = ['report_image_url']
 
 class FuelConsumptionSerializer(serializers.ModelSerializer):
     class Meta:
